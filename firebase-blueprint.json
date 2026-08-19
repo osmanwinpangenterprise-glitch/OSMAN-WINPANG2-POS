@@ -1,0 +1,296 @@
+{
+  "entities": {
+    "User": {
+      "title": "User",
+      "description": "User profile with role-based access control",
+      "type": "object",
+      "properties": {
+        "userId": { "type": "string", "maxLength": 128 },
+        "email": { "type": "string", "maxLength": 256 },
+        "fullName": { "type": "string", "maxLength": 128 },
+        "phone": { "type": "string", "maxLength": 32 },
+        "role": { "type": "string", "enum": ["ADMINISTRATOR", "MANAGER", "CASHIER", "STOREKEEPER"] },
+        "employeeId": { "type": "string", "maxLength": 64 },
+        "status": { "type": "string", "enum": ["ACTIVE", "INACTIVE", "SUSPENDED"] },
+        "photoURL": { "type": "string", "maxLength": 1024 },
+        "createdAt": { "type": "string", "format": "date-time" },
+        "updatedAt": { "type": "string", "format": "date-time" },
+        "lastLoginAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["userId", "email", "fullName", "role", "status"]
+    },
+    "Setting": {
+      "title": "Setting",
+      "description": "Business and system configuration",
+      "type": "object",
+      "properties": {
+        "businessName": { "type": "string", "maxLength": 128 },
+        "shortName": { "type": "string", "maxLength": 32 },
+        "businessAddress": { "type": "string", "maxLength": 256 },
+        "phone": { "type": "string", "maxLength": 64 },
+        "email": { "type": "string", "maxLength": 128 },
+        "logoUrl": { "type": "string", "maxLength": 1024 },
+        "currency": { "type": "string", "maxLength": 10 },
+        "currencySymbol": { "type": "string", "maxLength": 10 },
+        "taxName": { "type": "string", "maxLength": 64 },
+        "taxRate": { "type": "number" },
+        "taxEnabled": { "type": "boolean" },
+        "receiptPrefix": { "type": "string", "maxLength": 16 },
+        "invoicePrefix": { "type": "string", "maxLength": 16 },
+        "lowStockThresholdDefault": { "type": "number" },
+        "maxCashierDiscountPercent": { "type": "number" },
+        "maxManagerDiscountPercent": { "type": "number" },
+        "receiptFooter": { "type": "string", "maxLength": 512 },
+        "allowNegativeStock": { "type": "boolean" },
+        "updatedAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["businessName", "currency", "currencySymbol"]
+    },
+    "Category": {
+      "title": "Category",
+      "description": "Product category",
+      "type": "object",
+      "properties": {
+        "categoryId": { "type": "string", "maxLength": 128 },
+        "name": { "type": "string", "maxLength": 128 },
+        "description": { "type": "string", "maxLength": 512 },
+        "status": { "type": "string", "enum": ["ACTIVE", "INACTIVE"] },
+        "productCount": { "type": "number" },
+        "createdAt": { "type": "string", "format": "date-time" },
+        "updatedAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["categoryId", "name", "status"]
+    },
+    "Product": {
+      "title": "Product",
+      "description": "Retail product inventory item",
+      "type": "object",
+      "properties": {
+        "productId": { "type": "string", "maxLength": 128 },
+        "barcode": { "type": "string", "maxLength": 64 },
+        "sku": { "type": "string", "maxLength": 64 },
+        "name": { "type": "string", "maxLength": 256 },
+        "description": { "type": "string", "maxLength": 1024 },
+        "categoryId": { "type": "string", "maxLength": 128 },
+        "categoryName": { "type": "string", "maxLength": 128 },
+        "unit": { "type": "string", "maxLength": 32 },
+        "costPrice": { "type": "number" },
+        "sellingPrice": { "type": "number" },
+        "wholesalePrice": { "type": "number" },
+        "currentStock": { "type": "number" },
+        "reorderLevel": { "type": "number" },
+        "supplierId": { "type": "string", "maxLength": 128 },
+        "supplierName": { "type": "string", "maxLength": 128 },
+        "taxRate": { "type": "number" },
+        "taxable": { "type": "boolean" },
+        "imageUrl": { "type": "string", "maxLength": 1024 },
+        "status": { "type": "string", "enum": ["ACTIVE", "INACTIVE", "ARCHIVED"] },
+        "createdAt": { "type": "string", "format": "date-time" },
+        "updatedAt": { "type": "string", "format": "date-time" },
+        "createdBy": { "type": "string", "maxLength": 128 },
+        "updatedBy": { "type": "string", "maxLength": 128 }
+      },
+      "required": ["productId", "name", "costPrice", "sellingPrice", "currentStock", "status"]
+    },
+    "Customer": {
+      "title": "Customer",
+      "description": "Client account for retail and wholesale credit",
+      "type": "object",
+      "properties": {
+        "customerId": { "type": "string", "maxLength": 128 },
+        "customerCode": { "type": "string", "maxLength": 64 },
+        "fullName": { "type": "string", "maxLength": 128 },
+        "phone": { "type": "string", "maxLength": 32 },
+        "email": { "type": "string", "maxLength": 128 },
+        "address": { "type": "string", "maxLength": 256 },
+        "customerType": { "type": "string", "enum": ["WALK_IN", "REGULAR", "WHOLESALE", "CREDIT"] },
+        "creditLimit": { "type": "number" },
+        "balance": { "type": "number" },
+        "totalPurchases": { "type": "number" },
+        "status": { "type": "string", "enum": ["ACTIVE", "BLOCKED"] },
+        "createdAt": { "type": "string", "format": "date-time" },
+        "updatedAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["customerId", "fullName", "customerType", "balance", "status"]
+    },
+    "Supplier": {
+      "title": "Supplier",
+      "description": "Vendor supplying inventory",
+      "type": "object",
+      "properties": {
+        "supplierId": { "type": "string", "maxLength": 128 },
+        "supplierCode": { "type": "string", "maxLength": 64 },
+        "companyName": { "type": "string", "maxLength": 128 },
+        "contactPerson": { "type": "string", "maxLength": 128 },
+        "phone": { "type": "string", "maxLength": 32 },
+        "email": { "type": "string", "maxLength": 128 },
+        "address": { "type": "string", "maxLength": 256 },
+        "balance": { "type": "number" },
+        "totalPurchased": { "type": "number" },
+        "status": { "type": "string", "enum": ["ACTIVE", "INACTIVE"] },
+        "createdAt": { "type": "string", "format": "date-time" },
+        "updatedAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["supplierId", "companyName", "phone", "balance", "status"]
+    },
+    "Sale": {
+      "title": "Sale",
+      "description": "Completed or recorded point-of-sale transaction",
+      "type": "object",
+      "properties": {
+        "saleId": { "type": "string", "maxLength": 128 },
+        "receiptNumber": { "type": "string", "maxLength": 64 },
+        "customerId": { "type": "string", "maxLength": 128 },
+        "customerName": { "type": "string", "maxLength": 128 },
+        "cashierId": { "type": "string", "maxLength": 128 },
+        "cashierName": { "type": "string", "maxLength": 128 },
+        "sessionId": { "type": "string", "maxLength": 128 },
+        "subtotal": { "type": "number" },
+        "discount": { "type": "number" },
+        "discountType": { "type": "string", "enum": ["PERCENT", "FIXED"] },
+        "tax": { "type": "number" },
+        "total": { "type": "number" },
+        "costTotal": { "type": "number" },
+        "profit": { "type": "number" },
+        "amountPaid": { "type": "number" },
+        "change": { "type": "number" },
+        "paymentMethod": { "type": "string", "enum": ["CASH", "MOBILE_MONEY", "CARD", "BANK_TRANSFER", "CREDIT", "SPLIT"] },
+        "paymentReference": { "type": "string", "maxLength": 128 },
+        "status": { "type": "string", "enum": ["ACTIVE", "VOID", "REFUNDED"] },
+        "notes": { "type": "string", "maxLength": 512 },
+        "createdAt": { "type": "string", "format": "date-time" },
+        "updatedAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["saleId", "receiptNumber", "total", "cashierId", "status"]
+    },
+    "Expense": {
+      "title": "Expense",
+      "description": "Operational and store expense record",
+      "type": "object",
+      "properties": {
+        "expenseId": { "type": "string", "maxLength": 128 },
+        "date": { "type": "string", "format": "date-time" },
+        "category": { "type": "string", "maxLength": 64 },
+        "description": { "type": "string", "maxLength": 512 },
+        "amount": { "type": "number" },
+        "paymentMethod": { "type": "string", "maxLength": 32 },
+        "sessionId": { "type": "string", "maxLength": 128 },
+        "recordedBy": { "type": "string", "maxLength": 128 },
+        "recordedByName": { "type": "string", "maxLength": 128 },
+        "status": { "type": "string", "enum": ["ACTIVE", "VOID"] },
+        "createdAt": { "type": "string", "format": "date-time" },
+        "updatedAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["expenseId", "category", "amount", "recordedBy", "status"]
+    },
+    "CashSession": {
+      "title": "CashSession",
+      "description": "Cash register shift and reconciliation session",
+      "type": "object",
+      "properties": {
+        "sessionId": { "type": "string", "maxLength": 128 },
+        "userId": { "type": "string", "maxLength": 128 },
+        "userName": { "type": "string", "maxLength": 128 },
+        "openingCash": { "type": "number" },
+        "openingTime": { "type": "string", "format": "date-time" },
+        "cashSales": { "type": "number" },
+        "cashReceived": { "type": "number" },
+        "cashExpenses": { "type": "number" },
+        "cashWithdrawals": { "type": "number" },
+        "expectedCash": { "type": "number" },
+        "actualCash": { "type": "number" },
+        "variance": { "type": "number" },
+        "closingTime": { "type": "string", "format": "date-time" },
+        "closingNotes": { "type": "string", "maxLength": 512 },
+        "status": { "type": "string", "enum": ["OPEN", "CLOSED"] },
+        "createdAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["sessionId", "userId", "openingCash", "status"]
+    },
+    "StockMovement": {
+      "title": "StockMovement",
+      "description": "Audit movement trail for inventory changes",
+      "type": "object",
+      "properties": {
+        "movementId": { "type": "string", "maxLength": 128 },
+        "productId": { "type": "string", "maxLength": 128 },
+        "barcode": { "type": "string", "maxLength": 64 },
+        "productName": { "type": "string", "maxLength": 256 },
+        "type": { "type": "string", "enum": ["SALE", "PURCHASE", "ADJUSTMENT", "RETURN", "REFUND", "OPENING_STOCK"] },
+        "quantity": { "type": "number" },
+        "previousStock": { "type": "number" },
+        "newStock": { "type": "number" },
+        "referenceId": { "type": "string", "maxLength": 128 },
+        "referenceType": { "type": "string", "maxLength": 64 },
+        "reason": { "type": "string", "maxLength": 256 },
+        "performedBy": { "type": "string", "maxLength": 128 },
+        "performedByName": { "type": "string", "maxLength": 128 },
+        "createdAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["movementId", "productId", "type", "quantity", "performedBy"]
+    },
+    "AuditLog": {
+      "title": "AuditLog",
+      "description": "System action and compliance log",
+      "type": "object",
+      "properties": {
+        "logId": { "type": "string", "maxLength": 128 },
+        "userId": { "type": "string", "maxLength": 128 },
+        "userName": { "type": "string", "maxLength": 128 },
+        "userRole": { "type": "string", "maxLength": 64 },
+        "action": { "type": "string", "maxLength": 64 },
+        "module": { "type": "string", "maxLength": 64 },
+        "description": { "type": "string", "maxLength": 512 },
+        "referenceId": { "type": "string", "maxLength": 128 },
+        "createdAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["logId", "userId", "action", "module", "description"]
+    }
+  },
+  "firestore": {
+    "/users/{userId}": {
+      "schema": "User",
+      "description": "System user profiles with role-based permissions"
+    },
+    "/settings/{settingDocId}": {
+      "schema": "Setting",
+      "description": "Business metadata, branding, and POS settings"
+    },
+    "/categories/{categoryId}": {
+      "schema": "Category",
+      "description": "Product categories"
+    },
+    "/products/{productId}": {
+      "schema": "Product",
+      "description": "Product catalog and inventory levels"
+    },
+    "/customers/{customerId}": {
+      "schema": "Customer",
+      "description": "Customer profiles and credit ledgers"
+    },
+    "/suppliers/{supplierId}": {
+      "schema": "Supplier",
+      "description": "Suppliers and account balances"
+    },
+    "/sales/{saleId}": {
+      "schema": "Sale",
+      "description": "POS sales and transactions"
+    },
+    "/expenses/{expenseId}": {
+      "schema": "Expense",
+      "description": "Business expense records"
+    },
+    "/cashSessions/{sessionId}": {
+      "schema": "CashSession",
+      "description": "Register shift cash management"
+    },
+    "/stockMovements/{movementId}": {
+      "schema": "StockMovement",
+      "description": "Inventory movement audit log"
+    },
+    "/auditLogs/{logId}": {
+      "schema": "AuditLog",
+      "description": "Security and activity logs"
+    }
+  }
+}

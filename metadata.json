@@ -1,0 +1,6 @@
+{
+  "name": "Osman Winpang Enterprise POS",
+  "description": "Professional Firebase Point of Sale and Business Management System for Osman Winpang Enterprise.",
+  "requestFramePermissions": ["camera"],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

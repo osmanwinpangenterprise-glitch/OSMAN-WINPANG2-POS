@@ -1,0 +1,68 @@
+@import "tailwindcss";
+
+@layer base {
+  * {
+    scrollbar-width: thin;
+    scrollbar-color: #334155 transparent;
+    transition-property: background-color, border-color;
+    transition-duration: 150ms;
+  }
+}
+
+/* Light Mode Overrides for Nordic Daylight */
+html[data-theme="nordic-light"] body,
+html.light-mode body {
+  background-color: #f8fafc !important;
+  color: #0f172a !important;
+}
+
+html[data-theme="nordic-light"] aside,
+html[data-theme="nordic-light"] header {
+  background-color: #ffffff !important;
+  border-color: #e2e8f0 !important;
+  color: #0f172a !important;
+}
+
+/* Sapphire Corporate Navy Accent */
+html[data-theme="sapphire"] {
+  --primary-accent: #3b82f6;
+}
+
+/* Amber Boutique Accent */
+html[data-theme="amber"] {
+  --primary-accent: #f59e0b;
+}
+
+/* Crimson Velocity Accent */
+html[data-theme="crimson"] {
+  --primary-accent: #f43f5e;
+}
+
+/* Amethyst Royal Accent */
+html[data-theme="amethyst"] {
+  --primary-accent: #8b5cf6;
+}
+
+@media print {
+  body * {
+    visibility: hidden;
+  }
+  #printable-receipt, #printable-receipt * {
+    visibility: visible;
+  }
+  #printable-receipt {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 100%;
+    margin: 0;
+    padding: 10px;
+    box-shadow: none;
+    border: none;
+  }
+  .no-print {
+    display: none !important;
+  }
+}
+
+
