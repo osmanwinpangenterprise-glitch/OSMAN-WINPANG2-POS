@@ -1,10 +1,11 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useSettings } from '../../context/SettingsContext';
 import { useAuth } from '../../context/AuthContext';
 import { useToast } from '../../context/ToastContext';
 import { useTheme, THEMES } from '../../context/ThemeContext';
-import { seedInitialDemoData } from '../../services/seedService';
+import { seedInitialDemoData, getDatabaseStatistics, DatabaseCollectionStats } from '../../services/seedService';
 import { ConfirmationModal } from '../common/Modal';
+import { ClearDataModal } from './ClearDataModal';
 import {
   Store,
   Receipt,
@@ -19,11 +20,15 @@ import {
   Check,
   Sun,
   Moon,
+  Trash2,
+  RefreshCw,
+  ShieldCheck,
+  HardDrive,
 } from 'lucide-react';
 
 export function SettingsView() {
   const { settings, updateSettings } = useSettings();
-  const { profile } = useAuth();
+  const { profile, isAdmin } = useAuth();
   const { theme, setTheme } = useTheme();
   const { success, error: toastError, warning } = useToast();
 
@@ -45,7 +50,26 @@ export function SettingsView() {
 
   const [saving, setSaving] = useState(false);
   const [isSeedModalOpen, setIsSeedModalOpen] = useState(false);
+  const [isClearModalOpen, setIsClearModalOpen] = useState(false);
   const [seeding, setSeeding] = useState(false);
+  const [stats, setStats] = useState<DatabaseCollectionStats | null>(null);
+  const [loadingStats, setLoadingStats] = useState(false);
+
+  useEffect(() => {
+    loadStats();
+  }, []);
+
+  const loadStats = async () => {
+    setLoadingStats(true);
+    try {
+      const data = await getDatabaseStatistics();
+      setStats(data);
+    } catch {
+      // Handled
+    } finally {
+      setLoadingStats(false);
+    }
+  };
 
   const handleSave = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -80,7 +104,10 @@ export function SettingsView() {
       await seedInitialDemoData();
       success('Demo Store Initialized', 'Loaded comprehensive catalog, suppliers, customers, and transactions.');
       setIsSeedModalOpen(false);
-      window.location.reload();
+      await loadStats();
+      setTimeout(() => {
+        window.location.reload();
+      }, 1000);
     } catch (err: unknown) {
       toastError('Seed Error', err instanceof Error ? err.message : 'Error loading demo data');
     } finally {
@@ -94,7 +121,7 @@ export function SettingsView() {
       <div>
         <h2 className="text-xl font-bold text-slate-100">Enterprise POS Configuration & Policies</h2>
         <p className="text-xs text-slate-400">
-          Store branding, GRA Tax compliance settings, receipt customizer, and demo data generator
+          Store branding, GRA Tax compliance settings, receipt customizer, database management, and sample data controls
         </p>
       </div>
 
@@ -336,29 +363,93 @@ export function SettingsView() {
         </div>
       </form>
 
-      {/* Demo Data Seeder Card */}
-      <div className="p-5 rounded-2xl bg-slate-900 border border-emerald-900/40 space-y-3 mt-8">
-        <div className="flex items-center justify-between">
-          <div className="space-y-1">
+      {/* Cloud Database & Sample Data Operations Hub */}
+      <div className="p-5 rounded-2xl bg-slate-900 border border-slate-800 space-y-4 mt-8">
+        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2 pb-3 border-b border-slate-800">
+          <div>
             <div className="flex items-center gap-2 text-slate-100 font-bold text-sm">
               <Database className="w-4 h-4 text-emerald-400" />
-              <span>1-Click Enterprise Demo Data Generator</span>
+              <span>Database Management & Sample Data Tools</span>
             </div>
-            <p className="text-xs text-slate-400">
-              Populates realistic retail catalog, product categories, wholesale customers, suppliers, and sales history.
+            <p className="text-xs text-slate-400 mt-0.5">
+              Wipe test/sample records to prepare for real store deployment, or reload demo data for staff onboarding.
             </p>
           </div>
 
-          <button
-            type="button"
-            onClick={() => setIsSeedModalOpen(true)}
-            className="px-4 py-2 rounded-xl bg-emerald-950 hover:bg-emerald-900 text-emerald-300 border border-emerald-800 text-xs font-bold flex items-center gap-1.5 transition-colors"
-          >
-            <Sparkles className="w-4 h-4 text-emerald-400" />
-            <span>Seed Demo Data</span>
-          </button>
+          <div className="flex items-center gap-2">
+            <span className="text-[11px] text-slate-400 font-mono">
+              {loadingStats ? 'Checking...' : `${stats?.totalDocuments || 0} Total Records`}
+            </span>
+            <button
+              type="button"
+              onClick={loadStats}
+              disabled={loadingStats}
+              className="p-1 rounded-lg text-slate-400 hover:text-slate-200 hover:bg-slate-800"
+              title="Refresh counts"
+            >
+              <RefreshCw className={`w-3.5 h-3.5 ${loadingStats ? 'animate-spin text-emerald-400' : ''}`} />
+            </button>
+          </div>
+        </div>
+
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-1">
+          {/* Clear Sample Data Card */}
+          <div className="p-4 rounded-xl bg-slate-950/80 border border-rose-900/30 flex flex-col justify-between space-y-3">
+            <div className="space-y-1">
+              <div className="flex items-center gap-2 text-rose-300 font-bold text-xs">
+                <Trash2 className="w-4 h-4 text-rose-400" />
+                <span>Clear Sample & Demo Data</span>
+              </div>
+              <p className="text-[11px] text-slate-400 leading-relaxed">
+                Permanently remove demo catalog items, test sales receipts, sample customer profiles, or transaction history.
+              </p>
+            </div>
+
+            <button
+              type="button"
+              onClick={() => setIsClearModalOpen(true)}
+              className="w-full py-2 rounded-xl bg-rose-950/80 hover:bg-rose-900/80 text-rose-300 border border-rose-800/80 text-xs font-bold flex items-center justify-center gap-1.5 transition-colors shadow-xs"
+            >
+              <Trash2 className="w-3.5 h-3.5" />
+              <span>Open Data Clearance Hub</span>
+            </button>
+          </div>
+
+          {/* Seed Demo Data Card */}
+          <div className="p-4 rounded-xl bg-slate-950/80 border border-emerald-900/30 flex flex-col justify-between space-y-3">
+            <div className="space-y-1">
+              <div className="flex items-center gap-2 text-emerald-300 font-bold text-xs">
+                <Sparkles className="w-4 h-4 text-emerald-400" />
+                <span>Repopulate Demo Store</span>
+              </div>
+              <p className="text-[11px] text-slate-400 leading-relaxed">
+                Re-seeds 8 grocery & hardware products, 5 categories, 3 wholesale customers, 3 suppliers, and sample expenses.
+              </p>
+            </div>
+
+            <button
+              type="button"
+              onClick={() => setIsSeedModalOpen(true)}
+              className="w-full py-2 rounded-xl bg-emerald-950 hover:bg-emerald-900 text-emerald-300 border border-emerald-800 text-xs font-bold flex items-center justify-center gap-1.5 transition-colors shadow-xs"
+            >
+              <Sparkles className="w-3.5 h-3.5" />
+              <span>Seed Sample Data</span>
+            </button>
+          </div>
         </div>
       </div>
+
+      {/* Clear Data Modal */}
+      <ClearDataModal
+        isOpen={isClearModalOpen}
+        onClose={() => setIsClearModalOpen(false)}
+        onCleared={async () => {
+          await loadStats();
+          setTimeout(() => {
+            window.location.reload();
+          }, 800);
+        }}
+      />
 
       {/* Confirmation Modal for Demo Data Seed */}
       <ConfirmationModal
